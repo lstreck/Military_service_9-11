@@ -1,0 +1,2 @@
+### Military Service and Opinion About U.S. Government Prior Knowledge of 9/11 Attacks Amongst 2012 U.S. Voters ###
+In the project military_service_9-11, a chi-square test of independence analysis was conducted to determine if a relationship exists between military experience and voters' views on whether the U.S. government had prior knowledge of the 9/11 attacks.  The analysis used data from the American National Elections Study (ANES) of 2012 and was completed using R Markdown.  View the file "military_service_9-11.html" for the complete report.
