@@ -1,0 +1,102 @@
+---
+title: "Relationship Between Military Service and Opinion About U.S. Government Prior Knowledge of 9/11 Attacks Amongst 2012 U.S. Voters"
+date: "Oct. 29, 2015"
+output:
+  html_document:
+    theme: cerulean
+---
+
+<!-- For more info on RMarkdown see http://rmarkdown.rstudio.com/ -->
+
+<!-- Enter the code required to load your data in the space below. The data will be loaded but the line of code won't show up in your write up (echo=FALSE) in order to save space-->
+```{r echo=FALSE}
+load(url("http://bit.ly/dasi_anes_data"))
+```
+
+<!-- In the remainder of the document, add R code chunks as needed -->
+
+### Introduction:
+
+Is there a relationship between whether a person has served in the U.S. Armed Forces and their opinion about senior U.S. government officials having prior knowledge of the 9/11 attacks?  I’ve worked as an analyst in the defense industry and interfaced with military customers.  And that’s given me a little bit of insight into some of the current attitudes and procedures that govern information exchange and shape opinions in that population.  There are a number of reasons to believe this population would take an optimistic stance on the government’s role in the 9/11 attacks:  military training and respect of chain of command, a sense of patriotism that often accompanies service, special knowledge of government and military intelligence and practices, etc.  But there are also reasons to believe the population would take a pessimistic view:  disappointment with suboptimal military and government systems, experience with corrupt officials, special knowledge regarding the attacks, etc.  The goal of this study is to determine if there is a statistically significant difference between military and general population opinions about U.S. government prior knowledge of the 9/11 attacks.  
+
+The results of this study are of interest for a number of reasons.  According to the American National Elections Study of 2012, veterans and active military personnel make up more than 13% of the voting population.  Understanding their particular attitudes and priorities can help candidates shape campaigns and win elections.  But more importantly, exploring their beliefs (shaped by their unique military experience) can help the country better understand how our government may be succeeding or failing and call for action when needed.  
+
+### Data:
+
+The data for this study came from the American National Elections Study (ANES) of 2012.  This particular study has been conducted since 1948 and is typically performed through in-person interviewing during years of biennial national elections.  Questions include voting behavior, news habits, and opinions and attitudes about a wide range of topics including healthcare, human rights, equality, religion, the economy, and government spending priorities.  The original dataset is available on the ANES website at www.electionstudies.org. 
+
+The analysis looks at two variables in the dataset.  Categorical variable “dem_veteran” denotes whether the respondent reported ever serving on active duty in the U.S. Armed Forces (answer either “yes” or “no”).  And the categorical variable “nonmain_govt911” lists the respondent’s opinion about whether senior federal government officials knew about the terrorist attacks on September 11, 2001 before they happened (answer one of four levels: “definitely knew”, “probably knew”, “probably did not know”, and “definitely did not know”).  
+
+The data analyzed here have been minimally conditioned by removing missing values from the responses and creating factor variables when appropriate to facilitate analysis using the statistical programming language R.  The 2012 ANES contains 5,914 “cases” or respondents.  After removing cases for which there was not an answer listed in variable nonmain_govt911, the number of cases reduced to 5,373.  All respondents answered the question about military service, so there was no need to reduce the dataset further.
+This study is observational, meaning the data were collected in a way that does not directly interfere with how the data arise but only establish an association retrospectively.  Since the study is not experimental, the study can establish a correlation but not a causal connection.  
+
+The data meet most all of the conditions required for the statistical inference technique used.  The sample size is much less than 10% of the U.S. voting population ensuring independence.  Yet sample size is sufficiently large to provide at least five expected cases for each particular combination of variables.  Since the interviews were conducted in-person, the author wonders if convenience bias is at work, since people in sparsely populated areas of the country may be underrepresented.  Non-response bias may also be present.
+
+The study focuses on the portion of the U.S. voting population that has served in the U.S. Armed Forces at some point in their lives and how their opinion on the topic of interest may differ from voters who have not served in the military.  The military population includes active servicemen and servicewomen, working veterans, and retired veterans.  Since active military personnel are more likely to be deployed internationally and could not be interviewed in person per ANES standard procedure, it’s probable that they are underrepresented in this study.  The impact of this convenience bias is assumed to be small for this analysis.
+
+
+### Exploratory data analysis:
+
+Out of a total of 5,373 respondents, 718 (13.4%) answered yes to active military or veteran status.  Looking at a mosaic plot of the two groups (military and non-military), the majority of respondents had a moderate opinion on the likelihood that senior government officials had prior knowledge of the 9/11 attacks saying they “probably did” or “probably didn’t” (Fig. 1).  The extreme answers were less prevalent, with more people answering that the government “definitely didn’t know” than they “definitely did know”.  Though the trends of the military and non-military groups are similar, the plot does indicate that the military group may be slightly more likely to hold the view that senior government officials did not have prior knowledge of the attacks.  The following analysis will determine if the difference is statistically significant.
+
+```{r echo=FALSE}
+# Replace level names in factor variable to more neatly display contingency table
+levels(anes$nonmain_govt911)[1] <- "Definitely Knew"
+levels(anes$nonmain_govt911)[2] <- "Probably Knew"
+levels(anes$nonmain_govt911)[3] <- "Probably Did Not"
+levels(anes$nonmain_govt911)[4] <- "Definitely Did Not"
+
+```
+
+
+```{r }
+anes_sub <- anes[, c("dem_veteran", "nonmain_govt911")]
+anes_sub_clean <- anes_sub[complete.cases(anes_sub),]
+mytable <- table(anes_sub_clean$dem_veteran, anes_sub_clean$nonmain_govt911)
+mytable
+par(cex.axis= 0.6, cex.lab= 1.0, cex.sub= 0.8, las=1)
+mosaicplot(anes_sub_clean$dem_veteran~anes_sub_clean$nonmain_govt911, 
+           main="Fig. 1. Opinion on U.S. Gov't Prior Knowledge vs. Military Experience",
+           xlab= "Voter Reported U.S. Armed Forces Experience", 
+           ylab= "Opinion on U.S. Gov't Prior Knowledge",
+           col=c("aliceblue", "cornflowerblue", "firebrick1", "deeppink3"))
+```
+
+### Inference:
+
+For the null hypothesis for this study it is assumed that there is no difference between military and non-military U.S. voting populations on the question of whether senior U.S. government officials had prior knowledge of the 9/11 attacks.  The alternate hypothesis assumes that there is some meaningful difference between military and non-military populations on the question of prior knowledge of 9/11 attacks. 
+
+The chi-square test of independence is used to evaluate the relationship between the opinions of military and non-military voters on prior knowledge of the 9/11 attacks.  This is an appropriate technique to use since the hypotheses involve two categorical variables, one having more than two levels.  In order to use this technique, the conditions of independence and sample size must first be met.  As discussed earlier, the study sample nearly meets the independence requirement (with lingering question about convenience and no-response bias).  And the sample size requirement of at least five expected cases for each particular variable combination is more than adequately met.  
+
+The chi-square test of independence parameters chi-squared and degrees of freedom are calculated according to the following formulas:
+
+$$\\{\chi}^2=\sum_{i=1}^{k} \frac{(O - E)^2}{E}$$
+
+$$df=(R-1)*(C-1)$$
+where O = observed, E = expected, k = number of cells, R = number of rows, and C = number of columns.
+
+The R function pchisq() was used to calculate the chi-squared parameter, degrees of freedom, and p-value using the sample data contingency table values:  
+
+```{r}
+chisq.test(mytable)
+```
+
+The program calculated a chi-square of 5.234 and three degrees of freedom.  The resulting p-value of 15.54% exceeds a 5% significance level, therefore the null hypothesis is not rejected.  
+
+### Conclusion:
+
+In summary, ANES data from 2012 were examined to explore whether there is a relationship between U.S. voter military experience and a belief that senior U.S. government officials had prior knowledge of the 9/11 attacks.  A chi-square test of independence was used to evaluate the relationship between the two categorical variables.  Since the resulting p-value exceeded the significance level, the null hypothesis was not rejected.   The conclusion of this study is that these data do not provide convincing evidence that military experience and opinion about senior U.S. government officials having prior knowledge of the 9/11 attacks are related amongst the U.S voting population.  
+
+Questions remain about potential convenience and non-response bias in the ANES data.  In particular, it would be useful to determine how including internationally deployed military personnel in the data would impact the results.  Also, it would be interesting to break the military sample data into age groups since, for example, Vietnam veterans may have different opinions about government than millennial military personnel who grew up under a different administration and may not have seen war.  
+
+### References:
+
+The American National Election Studies (ANES; www.electionstudies.org). The ANES 2012 Time Series Study [dataset]. Stanford University and the University of Michigan [producers].
+
+### Appendix:
+
+Subset of study data:
+```{r}
+head(anes_sub_clean, n=40)
+```
+
